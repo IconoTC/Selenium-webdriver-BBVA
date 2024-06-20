@@ -14,8 +14,5 @@
     "mocha": "^10.4.0",
     "selenium-webdriver": "^4.21.0",
     "webdriver-manager": "^12.1.9"
-  },
-  "devDependencies": {
-    "chai": "^5.1.1"
   }
 }
