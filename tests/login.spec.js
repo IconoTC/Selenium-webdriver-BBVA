@@ -75,13 +75,29 @@ describe('login',  function () {
 
 
   it.only("login with valid credentials", async function() {
-    this.timeout(10000); // 10 segundos como tiempo máximo para este test
-        await driver.findElement(By.id('user-name')).sendKeys('standard_user');
+    this.timeout(15000); // 10 segundos como tiempo máximo para este test
+        const userNameInput = await driver.findElement(By.id('user-name'));
+        let valueUserName = await userNameInput.getAttribute('value');
+        console.log('value', valueUserName)
+        assert(valueUserName.includes(''));
+        userNameInput.sendKeys('standard_user');
+        await driver.sleep(300)
+        valueUserName = await userNameInput.getAttribute('value');
+        console.log('value', valueUserName)
+         assert(valueUserName.includes('standard_user'));
+        const passwordInput = await driver.findElement(By.id('password'));
+        let valuePassword = await passwordInput.getAttribute('value');
+        assert(valuePassword.includes(''));
         await driver.findElement(By.name('password')).sendKeys('secret_sauce');
+        await driver.sleep(300)
+        valuePassword = await passwordInput.getAttribute('value');
+        assert(valuePassword.includes('secret_sauce'));
         await driver.findElement(By.css('[data-test="login-button"]')).click();
         // Espera explícita hasta que se redirija a la página de inventario
         await driver.wait(until.urlContains('inventory'), 5000);
         const currentUrl = await driver.getCurrentUrl();
         assert(currentUrl.includes('inventory'), 'Login was not successful');
+        const cart_btn = await driver.wait(until.elementLocated(By.css('[data-test="add-to-cart-sauce-labs-bike-light"]')),2000);
+        assert.ok(cart_btn);
   });
 });
