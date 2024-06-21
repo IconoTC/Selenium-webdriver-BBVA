@@ -61,8 +61,6 @@ describe('login',  function () {
     console.log('value:', getInputValue);
     assert(getInputValue.includes('User'))//Verificamos que el value contiene el texto 'User'
     assert.strictEqual(getInputValue, 'User');//Verificamos que el value es exactamente 'User'
-
-
     assert(!pageText.includes('Epic sadface: Username is required'), `El texto "'username is required'" se encontró en la página`);
     //Hacemos click
     await driver.findElement(By.css('[data-test="login-button"]')).click();
@@ -73,5 +71,17 @@ describe('login',  function () {
     assert.ok(divLog); 
     assert(pageText.includes('Epic sadface: Password is required'), `El texto "'username is required'" no se encontró en la página`);
 
+  });
+
+
+  it.only("login with valid credentials", async function() {
+    this.timeout(10000); // 10 segundos como tiempo máximo para este test
+        await driver.findElement(By.id('user-name')).sendKeys('standard_user');
+        await driver.findElement(By.name('password')).sendKeys('secret_sauce');
+        await driver.findElement(By.css('[data-test="login-button"]')).click();
+        // Espera explícita hasta que se redirija a la página de inventario
+        await driver.wait(until.urlContains('inventory'), 5000);
+        const currentUrl = await driver.getCurrentUrl();
+        assert(currentUrl.includes('inventory'), 'Login was not successful');
   });
 });
