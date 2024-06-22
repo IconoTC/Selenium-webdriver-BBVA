@@ -3,7 +3,7 @@ const assert = require('assert');
 
 
 describe('login',  function () {
-    this.timeout(10000);
+    this.timeout(10000); //Tiempoo máximo para todos los tests de la suite: 10 segundos
 
     beforeEach(function () {
         driver = new Builder().forBrowser('chrome').build();
@@ -14,7 +14,7 @@ describe('login',  function () {
         await driver.quit();
     })
   it("visit the login url and check that Username, Password inputs and Login button appears", async function() {
-    this.timeout(15000);
+    this.timeout(15000); //Al hacer esto Modificamos el tiempo máximo para este test a 15 segundos
         await driver.sleep(1000); // Espera implicita, no es necesaria y lo ideal es no usarlas
         const url = await driver.getCurrentUrl();
         assert(url.includes('saucedemo.com'), 'URL should include saucedemo.com'); //Comprobamos que la url contiene saucedemo.com
@@ -74,8 +74,8 @@ describe('login',  function () {
   });
 
 
-  it.only("login with valid credentials", async function() {
-    this.timeout(15000); // 10 segundos como tiempo máximo para este test
+  it("login with valid credentials", async function() {
+    this.timeout(15000); // 15 segundos como tiempo máximo para este test
         const userNameInput = await driver.findElement(By.id('user-name'));
         let valueUserName = await userNameInput.getAttribute('value');
         console.log('value', valueUserName)
@@ -100,4 +100,27 @@ describe('login',  function () {
         const cart_btn = await driver.wait(until.elementLocated(By.css('[data-test="add-to-cart-sauce-labs-bike-light"]')),2000);
         assert.ok(cart_btn);
   });
+
+// Tests añadidos con 2 formas de comprobar que un elemento web no existe
+
+  it("Check elements does not exist using catch", async function() {
+    let elementExists = true; //Creamos una variable tipo boolean para validar si el elemento existe o no
+    try {
+        await driver.findElement(By.css('[data-test="error-button"]'));
+    } catch (error) { //Capturamos el error para que el test no falle al no encontrar el elemento y cambiamos el valor de la variable elementExist
+        if (error.name === 'NoSuchElementError') {
+            elementExists = false;
+        }
+    }
+    assert.strictEqual(elementExists, false, 'The web element should not exist'); 
+    //Esta aserción pasará en verde si efectivamente el elemento no existe y devolverá un error en caso de que exista
+  });
+
+  it.only("Check elements does not exist using length", async function() { 
+    const elements = await driver.findElements(By.css('[data-test="error-button"]'));
+    const elementAppears = elements.length > 0; //creamos una constante que solo será true si el elemento existe
+    assert.strictEqual(elementAppears, false, 'The web element should not exist');
+    //En esta aserción pasará en verde si la constante elementAppears es "false", es decir  si efectivamente el elemento no existe y devolverá un error en caso de que exista
+  });
+
 });
